@@ -1,0 +1,19 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Editorial jewelry placeholder">
+  <defs>
+    <linearGradient id="editorialBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f4ecdf" />
+      <stop offset="50%" stop-color="#eadfcd" />
+      <stop offset="100%" stop-color="#dcc8ad" />
+    </linearGradient>
+    <radialGradient id="editorialGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1180 250) rotate(131) scale(660 520)">
+      <stop stop-color="#cda14a" stop-opacity="0.34" />
+      <stop offset="1" stop-color="#cda14a" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="1200" fill="url(#editorialBg)" />
+  <rect width="1600" height="1200" fill="url(#editorialGlow)" />
+  <path d="M420 824C576 692 1024 692 1180 824" stroke="#8f6a2f" stroke-opacity="0.36" stroke-width="6" stroke-linecap="round" />
+  <circle cx="800" cy="560" r="192" fill="#f7f0e5" stroke="#8f6a2f" stroke-opacity="0.36" stroke-width="8" />
+  <circle cx="800" cy="560" r="86" fill="#cda14a" fill-opacity="0.24" stroke="#8f6a2f" stroke-opacity="0.42" stroke-width="4" />
+  <text x="800" y="1020" text-anchor="middle" fill="#3d3324" fill-opacity="0.82" font-family="Georgia, 'Times New Roman', serif" font-size="64" letter-spacing="10">FEATURED EDIT</text>
+</svg>

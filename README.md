@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ZARVAYA JEWELS
+
+ZARVAYA JEWELS is a full-stack ecommerce project for premium Pakistani jewelry.
+It is built with Next.js App Router, TypeScript, MongoDB, and Tailwind CSS.
+
+## Project Status
+
+Modules 1 to 6 are implemented.
+
+- Module 1: Foundation and project setup
+- Module 2: Product management and API structure
+- Module 3: Storefront and homepage sections
+- Module 4: Product listing, category browsing, and product detail pages
+- Module 5: Search, filters, and navigation flow improvements
+- Module 6: Cart, checkout, order success, and order tracking flow
+
+## Tech Stack
+
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS
+- MongoDB + Mongoose
+- Zustand (state management)
+- React Hook Form + Zod
+- Framer Motion
+
+## Key Features
+
+- Modern storefront with responsive design
+- Category pages and product detail pages
+- Search and filter system
+- Cart drawer with persistent cart state
+- Checkout form with validation
+- Order creation API
+- Order success page by order number
+- Public order tracking page
 
 ## Getting Started
 
-First, run the development server:
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Create your environment file:
+
+```bash
+cp .env.example .env.local
+```
+
+3. Fill required environment variables in `.env.local`.
+
+4. Run development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Optional: Seed Sample Data
 
-## Learn More
+```bash
+npm run seed
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Build and Lint
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run lint
+npm run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Repository
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+GitHub: https://github.com/ZahidMiana/Zarvaya
