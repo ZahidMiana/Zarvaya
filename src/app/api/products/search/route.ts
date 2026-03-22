@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
+import { withPublicCache } from "@/lib/http-cache";
 import { searchProducts } from "@/lib/services/product-service";
 import type { ApiResponse } from "@/types";
 
@@ -23,14 +24,17 @@ export async function GET(request: NextRequest) {
     await connectDB();
     const data = await searchProducts(q, page, limit);
 
-    return NextResponse.json({
+    return withPublicCache(NextResponse.json({
       success: true,
       message: "Search results fetched successfully.",
       data,
       meta: {
         query: q,
       },
-    } satisfies ApiResponse<typeof data>);
+    } satisfies ApiResponse<typeof data>), {
+      sMaxAgeSeconds: 60,
+      staleWhileRevalidateSeconds: 300,
+    });
   } catch (error) {
     return NextResponse.json(
       {

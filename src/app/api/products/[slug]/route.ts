@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { AuthHttpError, verifyAdmin } from "@/lib/admin-auth";
+import { withPublicCache } from "@/lib/http-cache";
 import { clearProductCaches, getProductBySlug, softDeleteProduct } from "@/lib/services/product-service";
 import { productUpdateSchema } from "@/lib/validations";
 import { getPrimaryImageUrl } from "@/lib/utils";
@@ -29,11 +30,14 @@ export async function GET(_: NextRequest, context: ProductBySlugContext) {
       );
     }
 
-    return NextResponse.json({
+    return withPublicCache(NextResponse.json({
       success: true,
       message: "Product fetched successfully.",
       data,
-    } satisfies ApiResponse<typeof data>);
+    } satisfies ApiResponse<typeof data>), {
+      sMaxAgeSeconds: 180,
+      staleWhileRevalidateSeconds: 900,
+    });
   } catch (error) {
     return NextResponse.json(
       {

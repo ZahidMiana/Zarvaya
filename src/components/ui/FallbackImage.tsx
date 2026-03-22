@@ -10,8 +10,6 @@ type FallbackImageProps = Omit<ImageProps, "src"> & {
 
 const DEFAULT_FALLBACK = "/placeholders/jewelry-fallback.svg";
 
-const isRemote = (value: string) => /^https?:\/\//i.test(value);
-
 export default function FallbackImage({ src, fallbackSrc = DEFAULT_FALLBACK, unoptimized, onError, alt, ...props }: FallbackImageProps) {
   const [currentSrc, setCurrentSrc] = useState(src);
 
@@ -24,7 +22,7 @@ export default function FallbackImage({ src, fallbackSrc = DEFAULT_FALLBACK, uno
       {...props}
       src={currentSrc}
       alt={alt}
-      unoptimized={unoptimized ?? isRemote(currentSrc)}
+      unoptimized={unoptimized}
       onError={(event) => {
         if (currentSrc !== fallbackSrc) {
           setCurrentSrc(fallbackSrc);

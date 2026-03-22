@@ -18,6 +18,7 @@ type CartState = {
   closeDrawer: () => void;
   setOpen: (open: boolean) => void;
   setHydrated: (hydrated: boolean) => void;
+  replaceCart: (items: ICartItem[]) => void;
 };
 
 const createNoopStorage = (): Storage => ({
@@ -144,6 +145,7 @@ export const useCartStore = create<CartState>()(
       closeDrawer: () => set({ isOpen: false }),
       setOpen: (open) => set({ isOpen: open }),
       setHydrated: (hydrated) => set({ hydrated }),
+      replaceCart: (items) => set({ items }),
     }),
     {
       name: "zarvaya-cart",

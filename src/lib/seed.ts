@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { connectDB } from "@/lib/db";
 import Counter from "@/models/Counter";
+import BlogPost from "@/models/BlogPost";
 import Product from "@/models/Product";
 import {
   ProductCategory,
@@ -316,7 +317,9 @@ async function runSeed() {
   await connectDB();
 
   await Product.syncIndexes();
+  await BlogPost.syncIndexes();
   await Product.deleteMany({});
+  await BlogPost.deleteMany({});
   await Counter.deleteMany({ _id: { $regex: /^sku-/ } });
 
   const docs = seedProducts.map((product, index) => ({
@@ -338,6 +341,84 @@ async function runSeed() {
 
   const inserted = await Product.insertMany(docs, { ordered: true });
 
+  await BlogPost.insertMany([
+    {
+      title: "How to Care for Gold-Plated Jewellery",
+      excerpt: "Simple, practical care habits to preserve shine and extend life of your gold-plated jewellery.",
+      content: `
+        <h2>Keep moisture away</h2>
+        <p>Always remove jewellery before showering, swimming, or skincare. Moisture and chemicals can dull plating faster.</p>
+        <h2>Store each piece separately</h2>
+        <p>Use soft pouches or lined boxes to avoid scratching and tangling. Air-tight storage helps reduce tarnish risk.</p>
+        <h2>Clean gently</h2>
+        <p>Wipe pieces with a soft dry cloth after every wear. Avoid abrasive cleaners and harsh detergents.</p>
+        <h3>Bonus tip</h3>
+        <p>Wear jewellery as the final step in your routine after perfume and hairspray.</p>
+      `,
+      coverImage: {
+        url: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1400&auto=format&fit=crop",
+        publicId: "zarvaya/blog/care-gold-plated",
+      },
+      author: "Team ZARVAYA",
+      category: "care-guide",
+      tags: ["care", "gold-plated", "maintenance"],
+      isPublished: true,
+      publishedAt: new Date(),
+      metaTitle: "How to Care for Gold-Plated Jewellery | ZARVAYA Blog",
+      metaDescription: "Learn practical gold-plated jewellery care tips to preserve shine and durability.",
+    },
+    {
+      title: "Top Bridal Jewellery Trends Pakistan 2025",
+      excerpt: "From layered kundan to softer statement sets, here are the bridal jewellery trends defining 2025.",
+      content: `
+        <h2>Layered bridal looks</h2>
+        <p>Brides are combining chokers with longer haar styles for depth and regal proportion.</p>
+        <h2>Soft statement palettes</h2>
+        <p>Rose-gold tones and pearl accents are becoming popular alongside classic kundan choices.</p>
+        <h2>Mix of tradition and modern comfort</h2>
+        <p>Designs are shifting toward lighter wearable sets that still photograph beautifully across events.</p>
+        <h3>Styling note</h3>
+        <p>Coordinate necklines with necklace scale to keep bridal portraits balanced.</p>
+      `,
+      coverImage: {
+        url: "https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=1400&auto=format&fit=crop",
+        publicId: "zarvaya/blog/bridal-trends-2025",
+      },
+      author: "Team ZARVAYA",
+      category: "bridal",
+      tags: ["bridal", "trends", "pakistan", "2025"],
+      isPublished: true,
+      publishedAt: new Date(),
+      metaTitle: "Top Bridal Jewellery Trends Pakistan 2025 | ZARVAYA Blog",
+      metaDescription: "Explore the bridal jewellery trends shaping Pakistani weddings in 2025.",
+    },
+    {
+      title: "How to Style Jhumky for Every Occasion",
+      excerpt: "A quick styling guide to wear jhumky confidently from daily outfits to formal celebrations.",
+      content: `
+        <h2>Daily and office wear</h2>
+        <p>Pick smaller jhumky with clean silhouettes. Pair with minimal rings for polished everyday styling.</p>
+        <h2>Festive events</h2>
+        <p>Choose medium-size jhumky with texture details, and balance with subtle neckpieces.</p>
+        <h2>Bridal and formal nights</h2>
+        <p>Go for statement kundan or pearl jhumky with coordinated bangles for elevated impact.</p>
+        <h3>Pro tip</h3>
+        <p>If your outfit neckline is busy, let jhumky be the hero and keep necklace minimal.</p>
+      `,
+      coverImage: {
+        url: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?q=80&w=1400&auto=format&fit=crop",
+        publicId: "zarvaya/blog/style-jhumky-occasion",
+      },
+      author: "Team ZARVAYA",
+      category: "styling-tips",
+      tags: ["jhumky", "styling", "occasions"],
+      isPublished: true,
+      publishedAt: new Date(),
+      metaTitle: "How to Style Jhumky for Every Occasion | ZARVAYA Blog",
+      metaDescription: "Style your jhumky for office, festive, bridal, and everyday outfits with confidence.",
+    },
+  ]);
+
   const trendingCount = inserted.filter((item) => item.isTrending).length;
   const featuredCount = inserted.filter((item) => item.isFeatured).length;
   const newArrivalCount = inserted.filter((item) => item.isNewArrival).length;
@@ -346,6 +427,7 @@ async function runSeed() {
   console.log("Seed completed successfully.");
   console.log(`Inserted products: ${inserted.length}`);
   console.log(`Trending: ${trendingCount} | Featured: ${featuredCount} | NewArrival: ${newArrivalCount} | BestSeller: ${bestSellerCount}`);
+  console.log("Inserted blog posts: 3");
   console.log("Indexes synchronized on Product model.");
 
   await mongoose.disconnect();

@@ -2,12 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+import { signOut, useSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import MobileMenu from "@/components/layout/MobileMenu";
-import SearchModal from "@/components/search/SearchModal";
 import { selectCartItemCount, useCartStore } from "@/store/cartStore";
+import { useAuthStore } from "@/store/authStore";
 import { useWishlistStore } from "@/store/wishlistStore";
+
+const SearchModal = dynamic(() => import("@/components/search/SearchModal"), {
+  ssr: false,
+});
 
 const links = [
   { href: "/shop", label: "Collections" },
@@ -45,13 +51,42 @@ function BagIcon() {
   );
 }
 
+function UserIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-[18px] w-[18px]" aria-hidden="true">
+      <circle cx="12" cy="8" r="3.2" />
+      <path d="M5.5 19.5C6.4 15.8 9 14.2 12 14.2C15 14.2 17.6 15.8 18.5 19.5" />
+    </svg>
+  );
+}
+
 export default function Navbar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [isAtTop, setIsAtTop] = useState(true);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [wishlistCountRemote, setWishlistCountRemote] = useState<number | null>(null);
   const itemCount = useCartStore(selectCartItemCount);
   const openDrawer = useCartStore((state) => state.openDrawer);
   const wishlistCount = useWishlistStore((state) => state.ids.length);
+  const openAuthModal = useAuthStore((state) => state.openModal);
+
+  useEffect(() => {
+    const loadWishlistCount = async () => {
+      if (!session?.user?.id) {
+        setWishlistCountRemote(null);
+        return;
+      }
+
+      const response = await fetch("/api/user/wishlist");
+      const result = await response.json();
+      if (response.ok && result?.data?.items) {
+        setWishlistCountRemote(result.data.items.length);
+      }
+    };
+
+    void loadWishlistCount();
+  }, [session?.user?.id]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -125,14 +160,67 @@ export default function Navbar() {
               type="button"
               className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-charcoal/15 bg-white/70 text-charcoal transition hover:border-gold hover:text-gold"
               aria-label="Wishlist"
+              onClick={() => {
+                if (!session?.user?.id) {
+                  openAuthModal("login", "/account/wishlist");
+                  return;
+                }
+
+                window.location.href = "/account/wishlist";
+              }}
             >
-              <HeartIcon filled={wishlistCount > 0} />
-              {wishlistCount > 0 ? (
+              <HeartIcon filled={(wishlistCountRemote ?? wishlistCount) > 0} />
+              {(wishlistCountRemote ?? wishlistCount) > 0 ? (
                 <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-semibold text-charcoal">
-                  {wishlistCount}
+                  {wishlistCountRemote ?? wishlistCount}
                 </span>
               ) : null}
             </button>
+
+            {session?.user?.id ? (
+              <details className="relative">
+                <summary className="list-none">
+                  <button type="button" className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gold text-xs">
+                    {(session.user.name?.[0] ?? "U").toUpperCase()}
+                  </button>
+                </summary>
+                <div className="absolute right-0 mt-2 w-56 rounded-xl border border-stone-200 bg-white p-2 shadow-lg">
+                  <div className="border-b border-stone-200 p-2">
+                    <p className="text-sm font-medium text-charcoal">{session.user.name}</p>
+                    <p className="text-xs text-charcoal/65">{session.user.email ?? session.user.phone ?? ""}</p>
+                  </div>
+                  <Link href="/account/orders" className="block rounded-lg px-2 py-2 text-sm hover:bg-stone-100">My Orders</Link>
+                  <Link href="/account/wishlist" className="block rounded-lg px-2 py-2 text-sm hover:bg-stone-100">Wishlist</Link>
+                  <Link href="/account/addresses" className="block rounded-lg px-2 py-2 text-sm hover:bg-stone-100">Saved Addresses</Link>
+                  <Link href="/account/profile" className="block rounded-lg px-2 py-2 text-sm hover:bg-stone-100">Edit Profile</Link>
+                  <button
+                    type="button"
+                    onClick={() => void signOut({ callbackUrl: "/" })}
+                    className="mt-1 block w-full rounded-lg px-2 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </details>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => openAuthModal("login")}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-charcoal/15 bg-white/70 text-charcoal transition hover:border-gold hover:text-gold md:hidden"
+                  aria-label="Sign in"
+                >
+                  <UserIcon />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => openAuthModal("login")}
+                  className="hidden px-2 text-sm text-charcoal transition hover:text-gold md:inline-flex"
+                >
+                  Sign In
+                </button>
+              </>
+            )}
 
             <button
               type="button"

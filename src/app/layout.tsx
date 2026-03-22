@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
+import { Providers } from "@/components/providers/Providers";
 import ToastProvider from "@/components/providers/ToastProvider";
 import "./globals.css";
 
@@ -19,19 +20,36 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: "ZARVAYA JEWELS",
+    default: "ZARVAYA JEWELS | Premium Pakistani Jewellery",
     template: "%s | ZARVAYA JEWELS",
   },
-  description:
-    "Luxury Pakistani jewellery crafted for timeless elegance - necklaces, jhumky, rings, bangles, and sets.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  description: "Shop handpicked necklaces, jhumky, rings and bangles crafted for modern Pakistani elegance.",
+  keywords: [
+    "jewellery Pakistan",
+    "jhumky online",
+    "gold plated jewellery",
+    "Pakistani jewellery store",
+    "online jewellery Pakistan",
+  ],
   openGraph: {
-    title: "ZARVAYA JEWELS",
-    description:
-      "Luxury Pakistani jewellery crafted for timeless elegance - necklaces, jhumky, rings, bangles, and sets.",
-    siteName: "ZARVAYA JEWELS",
     type: "website",
+    locale: "en_PK",
+    siteName: "ZARVAYA JEWELS",
+    title: "ZARVAYA JEWELS | Premium Pakistani Jewellery",
+    description: "Shop handpicked necklaces, jhumky, rings and bangles crafted for modern Pakistani elegance.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@ZarvayaJewels",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION ?? "google-site-verification-pending",
   },
 };
 
@@ -47,8 +65,10 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-cream text-charcoal antialiased">
-        {children}
-        <ToastProvider />
+        <Providers>
+          {children}
+          <ToastProvider />
+        </Providers>
       </body>
     </html>
   );
