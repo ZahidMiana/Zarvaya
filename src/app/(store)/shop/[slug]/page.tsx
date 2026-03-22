@@ -72,9 +72,36 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const productUrl = `${siteUrl}/shop/${product.slug}`;
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: product.images.map((image) => image.url),
+    description: product.metaDescription || product.shortDescription || product.description,
+    sku: product.sku,
+    brand: {
+      "@type": "Brand",
+      name: "ZARVAYA JEWELS",
+    },
+    offers: {
+      "@type": "Offer",
+      url: productUrl,
+      priceCurrency: "PKR",
+      price: String(product.discountPrice ?? product.price),
+      availability: product.isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      itemCondition: "https://schema.org/NewCondition",
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: product.rating,
+      reviewCount: product.reviewCount,
+    },
+  };
 
   return (
     <div className="space-y-10 pb-14">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
       <section className="grid gap-8 lg:grid-cols-2 lg:gap-10">
         <ProductImageGallery images={product.images.map((image) => image.url)} alt={product.name} />
         <ProductDetailContent product={product} siteUrl={siteUrl} />

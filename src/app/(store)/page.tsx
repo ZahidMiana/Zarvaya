@@ -1,11 +1,25 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import CategoryShowcase from "@/components/home/CategoryShowcase";
 import FeaturedCollection from "@/components/home/FeaturedCollection";
 import HeroSection from "@/components/home/HeroSection";
-import InstagramFeed from "@/components/home/InstagramFeed";
 import NewsletterSection from "@/components/home/NewsletterSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import TrendingSection from "@/components/home/TrendingSection";
+
+const InstagramFeed = dynamic(() => import("@/components/home/InstagramFeed"), {
+  ssr: false,
+  loading: () => (
+    <section className="space-y-4">
+      <div className="h-8 w-64 animate-pulse rounded bg-stone-200" />
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div key={index} className="aspect-square animate-pulse rounded-2xl bg-stone-200" />
+        ))}
+      </div>
+    </section>
+  ),
+});
 
 export const metadata: Metadata = {
   title: "ZARVAYA JEWELS | Premium Pakistani Jewellery Online",
@@ -86,8 +100,31 @@ function TrustBar() {
 }
 
 export default function StoreHomePage() {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "ZARVAYA JEWELS",
+    url: siteUrl,
+    logo: `${siteUrl}/placeholders/jewelry-fallback.svg`,
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        telephone: "+92-3XX-XXXXXXX",
+        availableLanguage: ["English", "Urdu"],
+      },
+    ],
+    sameAs: [
+      process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "https://instagram.com/zarvayajewels",
+      process.env.NEXT_PUBLIC_FACEBOOK_URL ?? "https://facebook.com/zarvayajewels",
+      process.env.NEXT_PUBLIC_TIKTOK_URL ?? "https://tiktok.com/@zarvayajewels",
+    ],
+  };
+
   return (
     <div className="space-y-16 pb-14 md:space-y-20">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
       <HeroSection />
       <TrustBar />
       <CategoryShowcase />

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import PageHeader from "@/components/common/PageHeader";
 import ShopBrowser from "@/components/store/ShopBrowser";
 import { connectDB } from "@/lib/db";
@@ -14,6 +15,11 @@ import Product from "@/models/Product";
 import { ProductCategory } from "@/types";
 
 const PAGE_SIZE = 12;
+
+export const metadata: Metadata = {
+  title: "Shop",
+  description: "Browse premium necklaces, jhumky, rings, bangles, and sets at ZARVAYA JEWELS.",
+};
 
 type ShopPageProps = {
   searchParams?: Record<string, string | string[] | undefined>;

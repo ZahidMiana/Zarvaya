@@ -1,52 +1,48 @@
-"use client";
+import type { Metadata } from "next";
+import ContactForm from "@/components/store/ContactForm";
 
-import { useState } from "react";
-import PageHeader from "@/components/common/PageHeader";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+export const metadata: Metadata = {
+  title: "Contact",
+  description: "Contact ZARVAYA JEWELS for order support, product guidance, and collaboration inquiries.",
+};
 
 export default function ContactPage() {
-  const [submitted, setSubmitted] = useState(false);
+  const whatsappNumber = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "923XXXXXXXXX").replace(/[^\d]/g, "");
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
-      <PageHeader
-        title="Contact Us"
-        subtitle="Share your query and our team will assist you with product details and order guidance."
-      />
-      <form
-        className="space-y-4 rounded-2xl border border-stone-200 bg-white p-6"
-        onSubmit={(event) => {
-          event.preventDefault();
-          setSubmitted(true);
-        }}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" placeholder="Your name" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@example.com" />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="message">Message</Label>
-          <textarea
-            id="message"
-            className="min-h-32 w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm outline-none ring-gold focus:ring-2"
-            placeholder="How can we help you?"
-          />
-        </div>
-        <Button className="rounded-full bg-charcoal text-cream hover:bg-gold-dark">Send Message</Button>
-      </form>
-      {submitted ? (
-        <p className="rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-800">
-          Message received. We will reach out shortly.
+    <div className="grid gap-6 pb-10 pt-4 md:grid-cols-2 md:gap-8">
+      <section className="space-y-5 rounded-3xl border border-stone-200 bg-white p-6">
+        <p className="text-xs uppercase tracking-[0.24em] text-gold">Contact</p>
+        <h1 className="font-playfair text-5xl text-charcoal">Let&apos;s Talk</h1>
+        <p className="text-sm text-charcoal/72">
+          Whether you need order support, styling help, or custom recommendations, our team is here.
         </p>
-      ) : null}
+
+        <div className="space-y-3 rounded-2xl border border-gold/25 bg-gold/10 p-4">
+          <p className="text-xs uppercase tracking-[0.16em] text-gold-dark">Primary Support</p>
+          <a
+            href={`https://wa.me/${whatsappNumber}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-lg font-medium text-charcoal hover:underline"
+          >
+            WhatsApp: +{whatsappNumber}
+          </a>
+        </div>
+
+        <div className="space-y-2 text-sm text-charcoal/80">
+          <p>Email: info@zarvayajewels.com</p>
+          <p>Working Hours: Mon-Sat, 10am-8pm</p>
+        </div>
+
+        <div className="flex flex-wrap gap-2 text-xs">
+          <a href="https://instagram.com/zarvayajewels" target="_blank" rel="noreferrer" className="rounded-full border border-stone-300 px-3 py-1.5 hover:border-charcoal">Instagram</a>
+          <a href="https://facebook.com/zarvayajewels" target="_blank" rel="noreferrer" className="rounded-full border border-stone-300 px-3 py-1.5 hover:border-charcoal">Facebook</a>
+          <a href="https://tiktok.com/@zarvayajewels" target="_blank" rel="noreferrer" className="rounded-full border border-stone-300 px-3 py-1.5 hover:border-charcoal">TikTok</a>
+        </div>
+      </section>
+
+      <ContactForm />
     </div>
   );
 }

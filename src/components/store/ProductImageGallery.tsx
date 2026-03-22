@@ -106,6 +106,7 @@ export default function ProductImageGallery({ images, alt }: ProductImageGallery
               alt={`${alt} image ${activeIndex + 1}`}
               fill
               priority={activeIndex === 0}
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               className="object-cover transition-transform duration-500 md:group-hover:scale-[1.3]"
             />
           </motion.div>
@@ -148,7 +149,7 @@ export default function ProductImageGallery({ images, alt }: ProductImageGallery
               activeIndex === index ? "border-gold" : "border-stone-200",
             )}
           >
-            <FallbackImage src={image} alt={`${alt} thumbnail ${index + 1}`} fill className="object-cover" />
+            <FallbackImage src={image} alt={`${alt} thumbnail ${index + 1}`} fill sizes="96px" className="object-cover" />
           </button>
         ))}
       </div>
@@ -178,6 +179,7 @@ export default function ProductImageGallery({ images, alt }: ProductImageGallery
                 src={safeImages[activeIndex]}
                 alt={`${alt} lightbox image ${activeIndex + 1}`}
                 fill
+                sizes="100vw"
                 className="object-contain bg-black"
               />
 

@@ -2,15 +2,19 @@
 
 import Link from "next/link";
 import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
+import { useAuthStore } from "@/store/authStore";
 import type { ApiResponse, IOrder } from "@/types";
 
 function OrderSuccessContent() {
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
+  const openModal = useAuthStore((state) => state.openModal);
   const orderNumber = searchParams.get("order") ?? "";
 
   const [loading, setLoading] = useState(false);
@@ -186,6 +190,25 @@ function OrderSuccessContent() {
           Chat on WhatsApp
         </a>
       </div>
+
+      {!session?.user?.id ? (
+        <div className="rounded-2xl border border-gold/40 bg-cream-dark p-4 text-center">
+          <p className="font-playfair text-2xl text-charcoal">Track your order anytime</p>
+          <p className="mt-1 text-sm text-charcoal/75">
+            Create a free account to easily track {orderNumber} and all future orders.
+          </p>
+          <div className="mt-3 flex flex-wrap justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => openModal("register", "/", order?.customer?.email ?? "")}
+              className="inline-flex h-10 items-center rounded-full bg-charcoal px-5 text-sm text-cream"
+            >
+              {order?.customer?.email ? `Create account for ${order.customer.email}` : "Create Account"}
+            </button>
+            <button type="button" className="text-xs text-charcoal/60">No thanks</button>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

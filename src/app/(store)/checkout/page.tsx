@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCart } from "@/hooks/useCart";
 import { formatPrice } from "@/lib/utils";
+import { useAuthStore } from "@/store/authStore";
 import type { ApiResponse, IOrder } from "@/types";
 
 const CITY_OPTIONS = [
@@ -99,9 +101,13 @@ const paymentOptions: Array<{ value: PaymentMethodValue; title: string; descript
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { data: session } = useSession();
+  const openModal = useAuthStore((state) => state.openModal);
   const { isReady, items, itemCount, subtotal, shippingCost, total, clearCart } = useCart();
   const [orderNotesOpen, setOrderNotesOpen] = useState(false);
   const [couponCode, setCouponCode] = useState("");
+  const [guestBannerDismissed, setGuestBannerDismissed] = useState(false);
+  const codMaxAmount = Number(process.env.NEXT_PUBLIC_COD_MAX_ORDER_AMOUNT ?? 50000);
 
   const {
     register,
@@ -236,6 +242,38 @@ export default function CheckoutPage() {
             }
           })}
         >
+          {!session?.user?.id && !guestBannerDismissed ? (
+            <div className="rounded-xl border-l-4 border-gold bg-cream-dark p-4">
+              <p className="font-medium text-charcoal">Sign in for a faster checkout experience</p>
+              <p className="mt-1 text-sm text-charcoal/70">
+                Access saved addresses, track your orders, and get exclusive member offers.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => openModal("login", "/checkout")}
+                  className="inline-flex h-11 items-center rounded-full bg-charcoal px-5 text-sm text-cream"
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGuestBannerDismissed(true)}
+                  className="inline-flex h-11 items-center rounded-full border border-stone-300 px-5 text-sm text-charcoal"
+                >
+                  Continue as Guest
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {session?.user?.id ? (
+            <div className="rounded-xl border border-gold/35 bg-gold/10 p-4 text-sm text-charcoal">
+              <p className="font-medium">Welcome back, {session.user.name}!</p>
+              <p className="mt-1 text-charcoal/75">Your saved address can be pre-filled below.</p>
+            </div>
+          ) : null}
+
           <section className="space-y-4">
             <h2 className="font-playfair text-2xl text-charcoal">Contact Information</h2>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -334,6 +372,10 @@ export default function CheckoutPage() {
 
           <section className="space-y-4">
             <h2 className="font-playfair text-2xl text-charcoal">Payment Method</h2>
+            <p className="text-xs text-charcoal/65">
+              Cash on Delivery is available up to PKR {codMaxAmount.toLocaleString("en-PK")}. For higher-value
+              orders, please use EasyPaisa, JazzCash, or Bank Transfer.
+            </p>
             <div className="grid gap-3 sm:grid-cols-2">
               {paymentOptions.map((option) => {
                 const active = paymentMethod === option.value;
@@ -445,6 +487,11 @@ export default function CheckoutPage() {
             <ShieldCheck className="h-3.5 w-3.5" />
             Secure checkout
           </p>
+
+          <div className="rounded-xl border border-stone-200 bg-stone-50 p-3 text-xs text-charcoal/72">
+            <p className="font-medium text-charcoal">Delivery Timeline</p>
+            <p className="mt-1">Major cities: 2-4 business days | Other cities: 3-6 business days.</p>
+          </div>
 
           {!isReady || items.length === 0 ? (
             <Link href="/shop" className="inline-flex text-xs text-charcoal/60 underline-offset-4 hover:underline">

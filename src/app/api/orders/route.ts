@@ -63,6 +63,7 @@ export async function GET(request: NextRequest) {
     const data = await getAdminOrders({
       status: searchParams.get("status") ?? undefined,
       paymentStatus: searchParams.get("paymentStatus") ?? undefined,
+      paymentMethod: searchParams.get("paymentMethod") ?? undefined,
       city: searchParams.get("city") ?? undefined,
       dateFrom: searchParams.get("dateFrom") ?? undefined,
       dateTo: searchParams.get("dateTo") ?? undefined,
