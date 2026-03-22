@@ -1,5 +1,6 @@
 import Link from "next/link";
 import PageHeader from "@/components/common/PageHeader";
+import ProductsManager from "@/components/admin/ProductsManager";
 
 export default function AdminProductsPage() {
   return (
@@ -16,9 +17,7 @@ export default function AdminProductsPage() {
           </Link>
         }
       />
-      <div className="rounded-2xl border border-stone-200 bg-white p-6 text-sm text-charcoal/70">
-        Product listing table will render here.
-      </div>
+      <ProductsManager />
     </div>
   );
 }

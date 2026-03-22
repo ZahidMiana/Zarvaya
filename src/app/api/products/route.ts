@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { verifyAdmin, AuthHttpError } from "@/lib/admin-auth";
+import { withPublicCache } from "@/lib/http-cache";
 import { productCreateSchema } from "@/lib/validations";
 import Product from "@/models/Product";
 import { clearProductCaches, listProducts } from "@/lib/services/product-service";
@@ -38,11 +39,14 @@ export async function GET(request: NextRequest) {
       limit: parseNumber(searchParams.get("limit")),
     });
 
-    return NextResponse.json({
+    return withPublicCache(NextResponse.json({
       success: true,
       message: "Products fetched successfully.",
       data,
-    } satisfies ApiResponse<typeof data>);
+    } satisfies ApiResponse<typeof data>), {
+      sMaxAgeSeconds: 120,
+      staleWhileRevalidateSeconds: 600,
+    });
   } catch (error) {
     return NextResponse.json(
       {

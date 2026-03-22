@@ -78,6 +78,7 @@ export const contactSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   phone: z.string().regex(pakistanPhoneRegex).optional(),
+  subject: z.enum(["order-support", "product-query", "collaboration", "other"]),
   message: z.string().min(10).max(2000),
 });
 

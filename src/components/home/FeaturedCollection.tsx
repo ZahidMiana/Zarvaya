@@ -28,6 +28,8 @@ export default function FeaturedCollection({ imagePosition = "left" }: FeaturedC
             src="/placeholders/editorial-fallback.svg"
             alt="Bridal jewellery editorial"
             fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            priority
             className="object-cover"
           />
         </div>
@@ -44,7 +46,7 @@ export default function FeaturedCollection({ imagePosition = "left" }: FeaturedC
             {products.map((product) => (
               <article key={product.slug} className="flex items-center gap-3 rounded-xl border border-stone-200 bg-cream-dark/55 p-2.5">
                 <div className="relative h-16 w-16 overflow-hidden rounded-lg bg-cream-dark">
-                  <Image src={getPrimaryImageUrl(product)} alt={product.name} fill unoptimized className="object-cover" />
+                  <Image src={getPrimaryImageUrl(product)} alt={product.name} fill sizes="64px" className="object-cover" />
                 </div>
                 <div className="flex-1">
                   <p className="line-clamp-1 text-sm font-medium text-charcoal">{product.name}</p>

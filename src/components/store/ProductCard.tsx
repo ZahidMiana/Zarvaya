@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import type { MouseEvent } from "react";
+import toast from "react-hot-toast";
 import { formatPrice, getPrimaryImageUrl } from "@/lib/utils";
 import { useCart } from "@/hooks/useCart";
+import { useAuthStore } from "@/store/authStore";
 import { useWishlistStore } from "@/store/wishlistStore";
 import FallbackImage from "@/components/ui/FallbackImage";
 import type { IProduct } from "@/types";
@@ -14,6 +17,8 @@ type ProductCardProps = {
 };
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const { data: session } = useSession();
+  const openModal = useAuthStore((state) => state.openModal);
   const { addItem, openDrawer } = useCart();
   const toggleWishlist = useWishlistStore((state) => state.toggle);
   const isWishlisted = useWishlistStore((state) => state.has(product._id ?? product.slug));
@@ -25,10 +30,48 @@ export default function ProductCard({ product }: ProductCardProps) {
   const hasDiscount = typeof product.discountPrice === "number" && product.discountPrice < product.price;
   const savePercent = hasDiscount ? Math.round(((product.price - effectivePrice) / product.price) * 100) : 0;
 
-  const onWishlist = (event: MouseEvent<HTMLButtonElement>) => {
+  const onWishlist = async (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
+
+    if (!session?.user?.id) {
+      openModal("login");
+      return;
+    }
+
+    const currentlyWishlisted = isWishlisted;
     toggleWishlist(productId);
+
+    try {
+      if (!currentlyWishlisted) {
+        const response = await fetch("/api/user/wishlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to add to wishlist");
+        }
+
+        toast.success("Added to wishlist ♡");
+        return;
+      }
+
+      const response = await fetch(`/api/user/wishlist/${encodeURIComponent(productId)}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to remove from wishlist");
+      }
+
+      toast.success("Removed from wishlist");
+    } catch {
+      // Revert optimistic state on API failure.
+      toggleWishlist(productId);
+      toast.error("Could not update wishlist right now.");
+    }
   };
 
   function HeartIcon({ filled }: { filled?: boolean }) {
@@ -61,6 +104,8 @@ export default function ProductCard({ product }: ProductCardProps) {
           fallbackSrc="/placeholders/jewelry-fallback.svg"
           alt={product.name}
           fill
+          priority={Boolean(product.isTrending || product.isFeatured)}
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           className="object-cover transition-transform duration-700 group-hover:-translate-x-full"
         />
         {secondaryImage ? (
@@ -69,6 +114,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             fallbackSrc={primaryImage || "/placeholders/jewelry-fallback.svg"}
             alt={`${product.name} alternate`}
             fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover translate-x-full transition-transform duration-700 group-hover:translate-x-0"
           />
         ) : null}

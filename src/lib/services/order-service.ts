@@ -39,6 +39,7 @@ type CreateOrderInput = {
 type OrderAdminQuery = {
   status?: string;
   paymentStatus?: string;
+  paymentMethod?: string;
   city?: string;
   dateFrom?: string;
   dateTo?: string;
@@ -163,6 +164,19 @@ export async function createOrder(input: CreateOrderInput): Promise<IOrder> {
 
     const shippingCost = subtotal < 3000 ? 150 : 0;
     const total = subtotal + shippingCost;
+
+    const codMaxAmount = Number(process.env.COD_MAX_ORDER_AMOUNT ?? 50000);
+    if (
+      input.paymentMethod === "cod" &&
+      Number.isFinite(codMaxAmount) &&
+      codMaxAmount > 0 &&
+      total > codMaxAmount
+    ) {
+      throw new ServiceError(
+        400,
+        `Cash on Delivery is available up to PKR ${codMaxAmount.toLocaleString("en-PK")}. Please choose digital payment method.`,
+      );
+    }
 
     const order = new Order({
       customer: input.customer,
@@ -301,6 +315,10 @@ function buildAdminFilter(query: OrderAdminQuery): Record<string, unknown> {
 
   if (query.paymentStatus) {
     filter.paymentStatus = query.paymentStatus;
+  }
+
+  if (query.paymentMethod) {
+    filter.paymentMethod = query.paymentMethod;
   }
 
   if (query.city) {

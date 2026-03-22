@@ -169,16 +169,43 @@ export interface ICartItem {
 export interface IUser {
   _id?: string;
   name: string;
-  email: string;
+  email?: string;
   passwordHash?: string;
+  googleId?: string;
+  authProvider: "email" | "google" | "phone";
   role: "admin" | "customer";
   phone?: string;
+  isPhoneVerified: boolean;
+  isEmailVerified: boolean;
+  avatar?: string;
+  dateOfBirth?: string;
+  gender?: "female" | "male" | "other" | "prefer-not-to-say";
+  savedAddresses: IUserAddress[];
+  cart: IUserServerCartItem[];
   wishlist: string[];
   orderHistory: string[];
   isActive: boolean;
-  lastLogin?: string;
+  lastLoginAt?: string;
+  lastLoginMethod?: "email" | "google" | "phone";
   createdAt: string;
   updatedAt: string;
+}
+
+export interface IUserAddress {
+  _id?: string;
+  label: string;
+  street?: string;
+  area?: string;
+  city: string;
+  province?: string;
+  postalCode?: string;
+  isDefault: boolean;
+}
+
+export interface IUserServerCartItem {
+  product: string;
+  quantity: number;
+  addedAt: string;
 }
 
 export interface ApiResponse<T> {
